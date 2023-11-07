@@ -18,6 +18,7 @@ endif()
 
 add_executable(${PROJECT_NAME} ${SOURCE_LIST})
 
+add_compile_options(-O0)
 add_compile_options(-g)
 
 target_link_libraries(${PROJECT_NAME} ${PCAP_LIBRARY})

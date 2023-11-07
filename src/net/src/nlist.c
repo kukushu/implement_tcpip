@@ -48,3 +48,23 @@ void nlist_insert_after (nlist_t * list, nlist_node_t * pre, nlist_node_t * node
     pre->next->pre = node;
     return ;
 }
+nlist_node_t * nlist_remove_node (nlist_t * list, nlist_node_t * node) {
+    if (list->count == 0) {
+        return (nlist_node_t *) 0;
+    }
+    if (list->count == 1) {
+        list->first = (nlist_node_t *) 0;
+        list->last = (nlist_node_t *) 0;
+    } else if (list->first == node) {
+        list->first = node->next;
+        node->next->pre = 0;
+    } else if (list->last == node) {
+        list->last = node->pre;
+        node->pre->next = 0;
+    } else { 
+        node->pre->next = node->next;
+        node->next->pre = node->pre;
+    }
+    list->count --;
+    return node;
+}
