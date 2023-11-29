@@ -1,5 +1,16 @@
 {
     "files.associations": {
-        "dbg.h": "c"
+        "dbg.h": "c",
+        "chrono": "c",
+        "algorithm": "c",
+        "ether.h": "c",
+        "net_err.h": "c",
+        "netif_pcap.h": "c",
+        "net_cfg.h": "c",
+        "netif.h": "c",
+        "ipaddr.h": "c",
+        "mblock.h": "c",
+        "types.h": "c",
+        "pktbuf.h": "c"
     }
 }

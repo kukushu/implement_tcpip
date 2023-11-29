@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "gdb launch",
+            "name": "tcpip",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/tcpip_my",
@@ -14,3 +14,4 @@
         },
     ]
 }
+
