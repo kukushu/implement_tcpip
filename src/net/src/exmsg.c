@@ -1,4 +1,5 @@
 #include "exmsg.h"
+#include "netif.h"
 #include "fixq.h"
 #include "net_err.h"
 #include "net_cfg.h"
@@ -31,39 +32,46 @@ net_err_t exmsg_init (void) {
     return NET_ERR_OK;
 }
 
+void printHex(const unsigned char *data, int length) {
+    for (int i = 0; i < length; i++) {
+        printf("%02x ", data[i]);
+        if ((i + 1) % 16 == 0) {
+            printf("\n");
+        }
+    }
+    printf("\n");
+}
+
+
+
 static void * work_thread (void * arg) {
     dbg_info (DBG_MSG, "exmsg work thread is running");
+
     while (1) {
         exmsg_t * msg = (exmsg_t *) fixq_recv (&msg_queue);
-        printf ("recv a msg type: %d, id : %d\n", msg->type, msg->id);
+        
+        printf ("******************************\n");
+        pktbuf_read ((pktbuf_t *) fixq_recv (&msg->netif.netif->in_q));
+
         mblock_free (&msg_block, msg);
     }
     return (void *) 0;
 }
 
-
-net_err_t exmsg_netif_in (void) {
+net_err_t exmsg_netif_in (netif_t * netif) {
     exmsg_t * msg = mblock_alloc (&msg_block);
-    if (!msg) {
-        dbg_warning (DBG_MSG, "no free msg");
-        return NET_ERR_EXMSG;
-    }
-    static int id = 0;
+
     msg->type = NET_EXMSG_NETIF_IN;
-    msg->id = id ++;
+    msg->netif.netif = netif;
+
     net_err_t err = fixq_send (&msg_queue, msg);
 
-    if (err < 0) {
-        dbg_warning (DBG_MSG, "failed to send");
-        mblock_free (&msg_block, msg);
-        return err;
-    }
     return NET_ERR_OK;
 }
 
 net_err_t exmsg_start (void) {
     pthread_t thread_id;
-    if (pthread_create (&thread_id, NULL, work_thread, NULL) != 0) {
+    if (pthread_create (&thread_id, NULL, work_thread, (void *) 0) != 0) {
         dbg_error (DBG_EXMSG, "pthread_create() failed");
         return NET_ERR_EXMSG;
     }

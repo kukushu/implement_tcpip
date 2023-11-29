@@ -75,7 +75,7 @@ static inline nlist_node_t * nlist_remove_last (nlist_t * list) {
 
 #define nlist_for_each(node_p, list) _nlist_for_each ((node_p), (list))
 #define _nlist_for_each(node_p, list) for (node_p = list->first; node_p; node_p = node_p->next)
-#define get_nlist_entry(type, pointer, element) ((type *)((char *) pointer - (char *) &(((type *) 0)->element)))
+#define nlist_get_entry(type, pointer, element) ((type *)((char *) pointer - (char *) &(((type *) 0)->element)))
 
 
 

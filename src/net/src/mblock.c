@@ -2,6 +2,7 @@
 #include "net_err.h"
 #include "net_cfg.h"
 #include "dbg.h"
+#include <stdio.h>
 
 net_err_t mblock_init (mblock_t *mblock, void * mem, int blk_size, int cnt) {
     if (sem_init (&mblock->sem, 0, cnt) == -1) {
@@ -29,12 +30,15 @@ net_err_t mblock_init (mblock_t *mblock, void * mem, int blk_size, int cnt) {
 }
 
 void * mblock_alloc (mblock_t * mblock) {
+
     if (sem_wait (&mblock->sem) != 0) {
         return (void *) 0;
     } else  {
+
         pthread_mutex_lock (&mblock->mutex);
         nlist_node_t * node = nlist_remove_first (&mblock->free_list);
         pthread_mutex_unlock (&mblock->mutex);
+
         return (void *) node;
     }
 }

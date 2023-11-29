@@ -1,19 +1,21 @@
 #include <stdio.h>
+#include <unistd.h>
 
 #include "fixq.h"
 #include "nlist.h"
 #include "dbg.h"
 #include "mblock.h"
 #include "net.h"
+#include "netif_pcap.h"
+#include "netif.h"
+#include "net_cfg.h"
 
 //definitions for test
+
 #define NUM_NODES 10
-
-net_err_t netdev_init (void) {
-    netif_pcap_open ();
-    return NET_ERR_OK;
-}
-
+extern const netif_ops_t netdev_ops;
+pcap_data_t netdev0_data = { .ip = netdev0_phy_ip, .hwaddr = netdev0_hwaddr };
+net_err_t netdev_init (void);
 void fixq_test ();
 void mblock_test ();
 void dbg_test ();
@@ -21,14 +23,15 @@ void nlist_test ();
 void basic_test ();
 
 int main () {
-    basic_test ();
 
     net_init ();    
+    //basic_test ();
+    net_err_t err = netdev_init ();
+
     net_start ();
 
-    net_err_t err = netdev_init ();
     while (1) {
-        sleep (10);
+        
     }
 
     return 0;
@@ -107,7 +110,22 @@ void nlist_test () {
 
     nlist_node_t * p;
     nlist_for_each (p, &list) {
-        printf ("%d\n", (get_nlist_entry (tnode_t, p, node))->id); 
+        printf ("%d\n", (nlist_get_entry (tnode_t, p, node))->id); 
     }
     printf ("count: %d\n", list.count);
+}
+net_err_t netdev_init (void) {
+
+    netif_t * netif = netif_open ("netif 0", &netdev_ops, &netdev0_data);
+
+
+    ipaddr_t ip, mask, gw;
+    ipaddr_from_str (&ip, netdev0_ip);
+    ipaddr_from_str (&mask, netdev0_mask);
+    ipaddr_from_str (&gw, netdev0_gw);
+    netif_set_addr (netif, &ip, &mask, &gw);
+
+    netif_set_active (netif);
+
+    return NET_ERR_OK;
 }

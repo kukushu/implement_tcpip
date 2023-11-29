@@ -41,7 +41,7 @@ void * fixq_recv (fixq_t * fixq) {
     if (fixq->out >= fixq->size) {
         fixq->out = 0;
     }
-    fixq->cnt ++;
+    fixq->cnt --;
     pthread_mutex_unlock (&fixq->mutex);
 
     sem_post (&fixq->send_sem);

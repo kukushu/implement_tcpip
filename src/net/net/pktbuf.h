@@ -9,18 +9,23 @@
 typedef struct _pktblk_t {
     nlist_node_t node;
     int size;
-    u_int8_t * data;
-    u_int8_t payload[PKTBUF_BLK_SIZE];
+    uint8_t * data;
+    uint8_t payload[PKTBUF_BLK_SIZE];
 } pktblk_t;
 
 typedef struct _pktbuf_t { 
     int total_size;
     nlist_t blk_list;
     nlist_node_t node; 
+
+    int pos;
+    pktblk_t * curr_blk;
+    uint8_t blk_offset;
 } pktbuf_t;
 
 net_err_t pktbuf_init (void);
-
-
+pktbuf_t * pktbuf_alloc (int size);
+void pktbuf_write (pktbuf_t * pktbuf, const char * data, int size);
+void pktbuf_read (pktbuf_t * pktbuf);
 
 #endif 
